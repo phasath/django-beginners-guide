@@ -6,6 +6,7 @@ from django.views.generic import UpdateView, ListView
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.urls import reverse
+from django.http import HttpResponse
 
 from .forms import NewTopicForm, PostForm
 from .models import Board, Post, Topic
@@ -104,6 +105,16 @@ def reply_topic(request, pk, topic_pk):
         form = PostForm()
     return render(request, 'reply_topic.html', {'topic': topic, 'form': form})
 
+
+def change_topic_status(request, pk, topic_pk):
+    topic = get_object_or_404(Topic, board__pk=pk, pk=topic_pk)
+    if request.method == 'GET':
+        if request.user.is_superuser:
+            topic.change_approval_status()
+            topic.save()
+            return redirect('board_topics', pk=pk)
+        else:
+            return HttpResponse(status=403)
 
 @method_decorator(login_required, name='dispatch')
 class PostUpdateView(UpdateView):
