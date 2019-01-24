@@ -33,7 +33,7 @@ class TopicListView(ListView):
         if not self.request.user.is_superuser:
             queryset = self.board.topics.filter(Q(approved=True) | Q(starter=self.request.user.id)).order_by('-last_updated').annotate(replies=Count('posts') - 1)
         else:
-        queryset = self.board.topics.order_by('-last_updated').annotate(replies=Count('posts') - 1)
+            queryset = self.board.topics.order_by('-last_updated').annotate(replies=Count('posts') - 1)
         return queryset
 
 
