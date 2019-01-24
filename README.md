@@ -1,3 +1,8 @@
+# About
+Forked from [here](https://github.com/sibtc/django-beginners-guide)
+The changes made here were to allow topics to be approved or not by administrators (django's superusers).
+
+
 # A Complete Beginner's Guide to Django
 
 [![Python Version](https://img.shields.io/badge/python-3.6-brightgreen.svg)](https://python.org)
