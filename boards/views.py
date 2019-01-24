@@ -1,4 +1,4 @@
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import get_object_or_404, redirect, render
@@ -29,6 +29,9 @@ class TopicListView(ListView):
 
     def get_queryset(self):
         self.board = get_object_or_404(Board, pk=self.kwargs.get('pk'))
+        if not self.request.user.is_superuser:
+            queryset = self.board.topics.filter(Q(approved=True) | Q(starter=self.request.user.id)).order_by('-last_updated').annotate(replies=Count('posts') - 1)
+        else:
         queryset = self.board.topics.order_by('-last_updated').annotate(replies=Count('posts') - 1)
         return queryset
 
