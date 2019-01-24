@@ -25,6 +25,7 @@ class Board(models.Model):
 class Topic(models.Model):
     subject = models.CharField(max_length=255)
     last_updated = models.DateTimeField(auto_now_add=True)
+    approved = models.BooleanField(null=False, default=False)
     board = models.ForeignKey(Board, related_name='topics')
     starter = models.ForeignKey(User, related_name='topics')
     views = models.PositiveIntegerField(default=0)
@@ -51,6 +52,9 @@ class Topic(models.Model):
     def get_last_ten_posts(self):
         return self.posts.order_by('-created_at')[:10]
 
+    def change_approval_status(self):
+        self.approved = not self.approved
+        return True
 
 class Post(models.Model):
     message = models.TextField(max_length=4000)
@@ -59,6 +63,7 @@ class Post(models.Model):
     updated_at = models.DateTimeField(null=True)
     created_by = models.ForeignKey(User, related_name='posts')
     updated_by = models.ForeignKey(User, null=True, related_name='+')
+    
 
     def __str__(self):
         truncated_message = Truncator(self.message)
@@ -66,3 +71,4 @@ class Post(models.Model):
 
     def get_message_as_markdown(self):
         return mark_safe(markdown(self.message, safe_mode='escape'))
+
